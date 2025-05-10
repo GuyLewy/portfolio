@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+ 
+:root {
+  --bg: #fff;
+  --text-fg: #000;
+  
+  :where(.dark) {
+    --bg: #000; 
+    --text-fg: #fff
+  }
+}
+
+/* `inline` is necessary to make it work */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text-fg);
+}
