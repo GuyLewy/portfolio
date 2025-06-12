@@ -1,4 +1,5 @@
 import React, {
+    useEffect,
 	useReducer,
 	type Dispatch,
 	type ReactNode,
@@ -11,13 +12,7 @@ export type ExternalContainerProps = {
 	colStart: number;
 	rowSpan: number;
 	colSpan: number;
-	bigRowStart?: number;
-	bigColStart?: number;
-	bigRowSpan?: number;
-	bigColSpan?: number;
 	className?: string;
-	focus: number;
-	setFocused: Dispatch<SetStateAction<number>>;
 	index: number;
 	children?: ReactNode;
 };
@@ -30,6 +25,9 @@ export type ContainerProps = ExternalContainerProps & {
 		cols: number;
 		rows: number;
 	};
+    focus: number;
+	animationDuration: number;
+	setFocused?: Dispatch<SetStateAction<number>>;
 };
 
 function ContainerComponent({
@@ -38,14 +36,11 @@ function ContainerComponent({
 	colStart,
 	rowSpan,
 	colSpan,
-	bigRowStart,
-	bigColStart,
-	bigRowSpan,
-	bigColSpan,
 	index,
 	focus,
 	setFocused,
 	className,
+	animationDuration,
 	children,
 }: ContainerProps) {
 	const isFocused = focus === index;
@@ -95,16 +90,8 @@ function ContainerComponent({
 		return position;
 	}
 
-	const [position, updatePos] = useReducer(movePosition, {
-		row: rowStart,
-		col: colStart,
-	});
-
-	colSpan = isFocused ? bigColSpan ?? colSpan : colSpan
-	rowSpan = isFocused ? bigRowSpan ?? rowSpan : rowSpan
-
-	const xPos = `${(position.col - 1) * (cellDim.w + cellDim.gap.x)}%`;
-	const yPos = `${(position.row - 1) * (cellDim.h + cellDim.gap.y)}%`;
+	const xPos = `${(colStart - 1) * (cellDim.w + cellDim.gap.x)}%`;
+	const yPos = `${(rowStart - 1) * (cellDim.h + cellDim.gap.y)}%`;
 	const width = `${
 		colSpan * cellDim.w + cellDim.gap.x * (colSpan - 1)
 	}%`;
@@ -116,6 +103,7 @@ function ContainerComponent({
 		<div
 			className={cn(
 				"bg-foreground absolute transition-[top_left_width_height]",
+				`duration-[${animationDuration}s]`,
 				className || ""
 			)}
 			style={{
@@ -123,19 +111,11 @@ function ContainerComponent({
 				top: yPos,
 				width: width,
 				height: height,
+				transitionDuration: `${animationDuration}s`,
 			}}
 			onClick={() => {
-				setFocused(isFocused ? 0 : index);
-				updatePos(
-					isFocused
-						? { set: "reset" }
-						: {
-								set: {
-									row: bigRowStart ?? rowStart,
-									col: bigColStart ?? colStart,
-								},
-						  }
-				);
+				
+				setFocused?.(isFocused ? 0 : index);
 			}}
 		>
 			{children}
