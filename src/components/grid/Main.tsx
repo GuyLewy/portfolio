@@ -6,10 +6,6 @@ export default function Main() {
 	const gridWidth = 12;
 	const gridHeight = 8;
 
-	const gridPositions = Array.from({ length: gridHeight }, (_, i) => {
-		return Array.from({ length: gridWidth }, (_, j) => [i + 1, j + 1]);
-	}).flat();
-
 	return (
 		<div className="w-full h-full flex items-center justify-center bg-background dark p-6">
 			<Grid
@@ -19,20 +15,20 @@ export default function Main() {
 				gap={{ x: 1, y: 1.5 }}
 				animations={{
 					1: {
-						duration: 1,
-						0: {
+						duration: 0.2,
+						1: {
 							1: { width: 4, height: 3 },
 						},
-						1: {
+						2: {
 							1: { width: 4, height: 4 },
 						},
-						2: {
+						3: {
 							1: { width: 4, height: 5 },
 						},
 					},
 					2: {
-						duration: 1,
-						0: {
+						duration: 0.4,
+						1: {
 							2: { width: 4, height: 3 },
 						},
 					},
@@ -139,15 +135,20 @@ function Grid({
 		}, animationDuration * 1000);
 	}
 
-	console.log(focused)
-
 	const firstClose = useRef(true);
+	const firstOpen = useRef(true);
 
 	useEffect(() => {
 		if (requestedFocus === focused) {
-			firstClose.current = true; // Reset for next close
+			firstClose.current = true;
 			if (!curAnimation) return;
-			if (curStep >= Object.keys(curAnimation).length - 2) return;
+			if (curStep >= Object.keys(curAnimation).length - 1) return;
+
+			if (firstOpen.current) {
+				setCurStep(curStep + 1);
+				firstOpen.current = false;
+				return;
+			}
 
 			const timeout = setTimeout(() => {
 				setCurStep(curStep + 1);
@@ -155,6 +156,7 @@ function Grid({
 
 			return () => clearTimeout(timeout);
 		} else {
+			firstOpen.current = true;
 			if (!curAnimation) return;
 			if (curStep <= 0) return;
 

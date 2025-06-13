@@ -1,6 +1,4 @@
 import React, {
-    useEffect,
-	useReducer,
 	type Dispatch,
 	type ReactNode,
 	type SetStateAction,
@@ -50,44 +48,6 @@ function ContainerComponent({
 			"Container requires cellDim to be provided by Grid component"
 		);
 		return null;
-	}
-
-	function movePosition(
-		position: { row: number; col: number },
-		move:
-			| { set: { row: number; col: number } | "reset"; dir?: never }
-			| { set?: never; dir: "l" | "r" | "u" | "d" }
-	) {
-		if (move.set) {
-			if (move.set === "reset") {
-				return { row: rowStart, col: colStart };
-			}
-
-			return {
-				row: Math.max(move.set.row, 1),
-				col: Math.max(move.set.col, 1),
-			};
-		}
-
-		switch (move.dir) {
-			case "r":
-				position.col++;
-				break;
-			case "l":
-				position.col--;
-				break;
-			case "u":
-				position.row++;
-				break;
-			case "d":
-				position.row--;
-				break;
-		}
-
-		position.row = Math.max(position.row, 1);
-		position.col = Math.max(position.col, 1);
-
-		return position;
 	}
 
 	const xPos = `${(colStart - 1) * (cellDim.w + cellDim.gap.x)}%`;
